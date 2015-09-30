@@ -12,6 +12,8 @@ import com.fillingapps.everpobre.model.Notebook;
 import com.fillingapps.everpobre.model.db.DBHelper;
 
 import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.List;
 
 import static com.fillingapps.everpobre.model.db.DBConstants.*;
 
@@ -22,7 +24,7 @@ public class NotebookDAO implements DAOPersistable<Notebook>{
             KEY_NOTEBOOK_ID,
             KEY_NOTEBOOK_NAME,
             KEY_NOTEBOOK_CREATION_DATE,
-            KEY_NOTEBOOK_CREATION_DATE
+            KEY_NOTEBOOK_MODIFICATION_DATE,
     };
 
     public NotebookDAO(Context context) {
@@ -35,7 +37,7 @@ public class NotebookDAO implements DAOPersistable<Notebook>{
             return DBHelper.INVALID_ID;
         }
         final DBHelper dbHelper = DBHelper.getInstance(context.get());
-        SQLiteDatabase db = getDb(dbHelper);
+        SQLiteDatabase db = DBHelper.getDb(dbHelper);
 
         db.beginTransaction();
         long id = DBHelper.INVALID_ID;
@@ -43,6 +45,9 @@ public class NotebookDAO implements DAOPersistable<Notebook>{
         try {
             id = db.insert(TABLE_NOTEBOOK, null, getContentValues(data));
             // data.setId(id);
+
+            // Hacemos el commit: setTransactionSuccessful()
+            db.setTransactionSuccessful();
         }
         finally {
             db.endTransaction();
@@ -53,18 +58,15 @@ public class NotebookDAO implements DAOPersistable<Notebook>{
         return id;
     }
 
-    public static SQLiteDatabase getDb(DBHelper dbHelper) {
-        SQLiteDatabase db = null;
-        try {
-            db = dbHelper.getWritableDatabase();
-        }
-        catch (SQLiteException e){
-            db = dbHelper.getWritableDatabase();
-        }
-        return db;
-    }
-
     private static ContentValues getContentValues(Notebook data) {
+
+        if (data.getCreationDate() == null) {
+            data.setCreationDate(new Date());
+        }
+        if (data.getModificationDate() == null) {
+            data.setModificationDate(new Date());
+        }
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_NOTEBOOK_NAME, data.getName());
         contentValues.put(KEY_NOTEBOOK_CREATION_DATE, DBHelper.convertDateToLong(data.getCreationDate()));
@@ -79,7 +81,7 @@ public class NotebookDAO implements DAOPersistable<Notebook>{
             return;
         }
         final DBHelper dbHelper = DBHelper.getInstance(context.get());
-        SQLiteDatabase db = getDb(dbHelper);
+        SQLiteDatabase db = DBHelper.getDb(dbHelper);
 
         db.beginTransaction();
 
@@ -88,6 +90,9 @@ public class NotebookDAO implements DAOPersistable<Notebook>{
 //            db.update(TABLE_NOTEBOOK, getContentValues(data), KEY_NOTEBOOK_ID + "=" + id, null);
             // Forma 2: evitas la insercion de codigo SQL malicioso
             db.update(TABLE_NOTEBOOK, getContentValues(data), KEY_NOTEBOOK_ID + "=?", new String[]{ "" + id });
+
+            // Hacemos el commit: setTransactionSuccessful()
+            db.setTransactionSuccessful();
         }
         finally {
             db.endTransaction();
@@ -99,7 +104,7 @@ public class NotebookDAO implements DAOPersistable<Notebook>{
     @Override
     public void delete(long id) {
         final DBHelper dbHelper = DBHelper.getInstance(context.get());
-        SQLiteDatabase db = getDb(dbHelper);
+        SQLiteDatabase db = DBHelper.getDb(dbHelper);
 
         if (id == DBHelper.INVALID_ID){
             // Borro todos los registros
@@ -129,7 +134,7 @@ public class NotebookDAO implements DAOPersistable<Notebook>{
     // Consulta de todos los registros
     public Cursor queryCursor() {
         final DBHelper dbHelper = DBHelper.getInstance(context.get());
-        SQLiteDatabase db = getDb(dbHelper);
+        SQLiteDatabase db = DBHelper.getDb(dbHelper);
 
         // Ordenados por fecha de insercion (a traves del KEY_NOTEBOOK_ID)
         Cursor cursor = db.query(TABLE_NOTEBOOK, allColumns, null, null, null, null, KEY_NOTEBOOK_ID);
@@ -141,24 +146,17 @@ public class NotebookDAO implements DAOPersistable<Notebook>{
         Notebook notebook = null;
 
         final DBHelper dbHelper = DBHelper.getInstance(context.get());
-        SQLiteDatabase db = getDb(dbHelper);
+        SQLiteDatabase db = DBHelper.getDb(dbHelper);
 
         final String whereClause = KEY_NOTEBOOK_ID + "=" + id;
-        Cursor cursor = db.query(TABLE_NOTEBOOK, allColumns, whereClause, null, null, null, null);
+        Cursor cursor = db.query(TABLE_NOTEBOOK, allColumns, whereClause, null, null, null, KEY_NOTEBOOK_ID);
 
         if (cursor != null) {
             if (cursor.getCount() > 0) {
                 // Nos movemos al primer registro del cursor (inicialmente está en una posicion "beforeFirst")
                 cursor.moveToFirst();
 
-                notebook = new Notebook(cursor.getString(cursor.getColumnIndex(KEY_NOTEBOOK_NAME)));
-                notebook.setId(cursor.getLong(cursor.getColumnIndex(KEY_NOTEBOOK_ID)));
-
-                long creationDate = cursor.getLong(cursor.getColumnIndex(KEY_NOTEBOOK_CREATION_DATE));
-                long modificationDate = cursor.getLong(cursor.getColumnIndex(KEY_NOTEBOOK_MODIFICATION_DATE));
-
-                notebook.setCreationDate(DBHelper.convertLongToDate(creationDate));
-                notebook.setModificationDate(DBHelper.convertLongToDate(modificationDate));
+                notebook = notebookFromCursor(cursor);
             }
         }
 
@@ -167,4 +165,20 @@ public class NotebookDAO implements DAOPersistable<Notebook>{
 
         return notebook;
     }
+
+    @NonNull
+    public static Notebook notebookFromCursor(Cursor cursor) {
+        Notebook notebook;
+        notebook = new Notebook(cursor.getString(cursor.getColumnIndex(KEY_NOTEBOOK_NAME)));
+        notebook.setId(cursor.getLong(cursor.getColumnIndex(KEY_NOTEBOOK_ID)));
+
+        Long creationDate = cursor.getLong(cursor.getColumnIndex(KEY_NOTEBOOK_CREATION_DATE));
+        Long modificationDate = cursor.getLong(cursor.getColumnIndex(KEY_NOTEBOOK_MODIFICATION_DATE));
+
+        notebook.setCreationDate(DBHelper.convertLongToDate(creationDate));
+        notebook.setModificationDate(DBHelper.convertLongToDate(modificationDate));
+        return notebook;
+    }
+
+
 }

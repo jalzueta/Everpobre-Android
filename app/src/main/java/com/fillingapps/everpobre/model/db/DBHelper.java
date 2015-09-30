@@ -2,6 +2,7 @@ package com.fillingapps.everpobre.model.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -69,6 +70,17 @@ public class DBHelper extends SQLiteOpenHelper{
             case 3:
                 // upgrades for version 3->4
         }
+    }
+
+    public static SQLiteDatabase getDb(DBHelper dbHelper) {
+        SQLiteDatabase db = null;
+        try {
+            db = dbHelper.getWritableDatabase();
+        }
+        catch (SQLiteException e){
+            db = dbHelper.getWritableDatabase();
+        }
+        return db;
     }
 
 
