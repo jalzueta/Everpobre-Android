@@ -12,4 +12,7 @@
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="txt_notebook_name_mock_text">Un saludito para mi mejor amiguito</string>
+    <string name="txt_notebook_name_hint">Notebook name</string>
+    <string name="action_save_notebook_text">Save</string>
+    <string name="action_delete_notebook_text">Delete</string>
 </resources>
