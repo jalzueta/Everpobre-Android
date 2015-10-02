@@ -1,16 +1,19 @@
 package com.fillingapps.everpobre.activities;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+import com.fillingapps.everpobre.EverpobreApp;
 import com.fillingapps.everpobre.R;
-import com.fillingapps.everpobre.model.Note;
 import com.fillingapps.everpobre.model.Notebook;
 import com.fillingapps.everpobre.model.dao.NotebookDAO;
+import com.fillingapps.everpobre.providers.EverpobreProvider;
 import com.fillingapps.everpobre.utils.Constants;
 
 import butterknife.Bind;
@@ -49,6 +52,10 @@ public class EditNotebookActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_edit_notebook, menu);
+        if (editMode == EditMode.ADDING) {
+            MenuItem deteleItem = menu.findItem(R.id.action_delete_notebook);
+            deteleItem.setVisible(false);
+        }
         return true;
     }
 
@@ -73,7 +80,19 @@ public class EditNotebookActivity extends AppCompatActivity {
     }
 
     private void deleteNotebook() {
+        if (mNotebook == null) {
+            return;
+        }
 
+//        final NotebookDAO notebookDAO = new NotebookDAO(this);
+//        notebookDAO.delete(mNotebook);
+
+        ContentResolver cr = EverpobreApp.getAppContext().getContentResolver();
+        String sUri = EverpobreProvider.NOTEBOOKS_URI.toString() + "/" + mNotebook.getId();
+        Uri uri = Uri.parse(sUri);
+        cr.delete(uri, null, null);
+
+        finish();
     }
 
     private void saveNotebook() {

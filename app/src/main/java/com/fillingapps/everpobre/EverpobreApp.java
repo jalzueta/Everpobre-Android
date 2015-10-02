@@ -12,6 +12,11 @@ public class EverpobreApp extends Application{
     // Lo guardaos como referencia débil para evitar ciclos "strong"
     private static WeakReference<Context>  context;
 
+    public static Context getAppContext() {
+        return context.get();
+    }
+
+
     @Override
     public void onCreate() {
         super.onCreate();

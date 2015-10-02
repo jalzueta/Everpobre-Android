@@ -58,7 +58,7 @@ public class NotebookDAO implements DAOPersistable<Notebook>{
         return id;
     }
 
-    private static ContentValues getContentValues(Notebook data) {
+    public static ContentValues getContentValues(Notebook data) {
 
         if (data.getCreationDate() == null) {
             data.setCreationDate(new Date());

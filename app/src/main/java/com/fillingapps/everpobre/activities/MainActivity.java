@@ -1,15 +1,20 @@
 package com.fillingapps.everpobre.activities;
 
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.fillingapps.everpobre.R;
 import com.fillingapps.everpobre.fragments.DataGridFragment;
 import com.fillingapps.everpobre.model.Notebook;
 import com.fillingapps.everpobre.model.dao.NotebookDAO;
+import com.fillingapps.everpobre.utils.Constants;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +27,31 @@ public class MainActivity extends AppCompatActivity {
 
         mDataGridFragment = (DataGridFragment) getFragmentManager().findFragmentById(R.id.grid_fragment);
 
+        Cursor cursor = new NotebookDAO(this).queryCursor();
+        mDataGridFragment.setCursor(cursor);
+        mDataGridFragment.setIdLayout(R.layout.fragment_data_grid);
+        mDataGridFragment.setIdGridView(R.id.grid_view);
+
+        mDataGridFragment.setListener(new DataGridFragment.OnDataGridFragmentClickListener() {
+            @Override
+            public void dataGridElementClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(MainActivity.this, ShowNotebookActivity.class);
+                startActivity(i);
+            }
+
+            @Override
+            public void dataGridElementLongClick(AdapterView<?> parent, View view, int position, long id) {
+                NotebookDAO notebookDAO = new NotebookDAO(MainActivity.this);
+                // id, para un CursorAdapter es la id de la BD.
+                Notebook notebook = notebookDAO.query(id);
+
+                Intent i = new Intent(MainActivity.this, EditNotebookActivity.class);
+                i.putExtra(Constants.intent_key_notebook, notebook);
+
+                startActivity(i);
+            }
+        });
+
 //        insertNotebookStubs(10);
     }
 
@@ -29,6 +59,28 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        /*
+        // A segundo plano con un Thread
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Cursor cursor = new NotebookDAO(this).queryCursor();
+                mDataGridFragment.setCursor(cursor);
+
+                // Cambio al hilo principal
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDataGridFragment.refreshData();
+                    }
+                });
+            }
+        });
+        thread.start()
+        ;*/
+
+        Cursor cursor = new NotebookDAO(this).queryCursor();
+        mDataGridFragment.setCursor(cursor);
         mDataGridFragment.refreshData();
     }
 

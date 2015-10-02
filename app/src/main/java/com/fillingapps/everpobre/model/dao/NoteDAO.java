@@ -63,7 +63,7 @@ public class NoteDAO implements DAOPersistable<Note>{
         return id;
     }
 
-    private static ContentValues getContentValues(Note data) {
+    public static ContentValues getContentValues(Note data) {
 
         if (data.getCreationDate() == null) {
             data.setCreationDate(new Date());

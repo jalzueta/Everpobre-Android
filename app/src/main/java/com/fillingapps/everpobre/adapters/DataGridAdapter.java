@@ -18,6 +18,9 @@ import butterknife.ButterKnife;
 
 public class DataGridAdapter extends CursorAdapter{
 
+    @Bind(R.id.txt_notebook_name) TextView itemName;
+    @Bind(R.id.icon_notebook) ImageView itemIcon;
+
     private LayoutInflater layoutInflater;
     private Cursor mCursor;
 
@@ -29,45 +32,20 @@ public class DataGridAdapter extends CursorAdapter{
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
-
-        ViewHolder holder;
-
-        if (view != null) {
-            holder = (ViewHolder) view.getTag();
-        }
-        // si llega a "null" es porque no es una reutilizacion
-        else {
-            view = layoutInflater.inflate(R.layout.item_notebook, parent, false);
-            holder = new ViewHolder(view);
-            view.setTag(holder);
-        }
-
-        Notebook notebook = NotebookDAO.notebookFromCursor(mCursor);
-        holder.itemName.setText(notebook.getName());
+    // Creo la vista: esto se llama cuando de verdad hace falta una nueva vista.
+    // Al ser un CursorAdapter, el se encarga de la reutilizacion de las vistas,
+    // No es necesario un patron view-holder
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        View view = layoutInflater.inflate(R.layout.item_notebook, parent, false);
+        ButterKnife.bind(this, view);
 
         return view;
     }
 
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return null;
-    }
-
-    @Override
+    // Pinto la vista
     public void bindView(View view, Context context, Cursor cursor) {
-
-    }
-
-    // El patron View-ViewHolder sirve para no tener que hacer el hinflado de las celdas para todas las celdas,
-    // sino que se reaprovechan, como el iOS (a partir de Lollipop ya lo hace solito)
-    // El poner "static", la aislamos completamente de "DataGridAdapter"
-    static class ViewHolder {
-        @Bind(R.id.txt_notebook_name) TextView itemName;
-        @Bind(R.id.icon_notebook) ImageView itemIcon;
-
-        public ViewHolder(View view) {
-            ButterKnife.bind(this, view);
-        }
+        Notebook notebook = NotebookDAO.notebookFromCursor(mCursor);
+        itemName.setText(notebook.getName());
     }
 }
