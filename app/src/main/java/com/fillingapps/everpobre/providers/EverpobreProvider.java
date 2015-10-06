@@ -1,7 +1,6 @@
 package com.fillingapps.everpobre.providers;
 
 import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -11,11 +10,6 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-import com.fillingapps.everpobre.EverpobreApp;
-import com.fillingapps.everpobre.model.Note;
-import com.fillingapps.everpobre.model.Notebook;
-import com.fillingapps.everpobre.model.dao.NoteDAO;
-import com.fillingapps.everpobre.model.dao.NotebookDAO;
 import com.fillingapps.everpobre.model.db.DBConstants;
 import com.fillingapps.everpobre.model.db.DBHelper;
 

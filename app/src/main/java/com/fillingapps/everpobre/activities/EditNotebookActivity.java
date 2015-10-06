@@ -113,10 +113,14 @@ public class EditNotebookActivity extends AppCompatActivity {
 
         if (editMode == EditMode.ADDING) {
             final Notebook notebookToAdd = new Notebook(notebookName);
-            notebookDAO.insert(notebookToAdd);
+//            notebookDAO.insert(notebookToAdd);
+
+            EverpobreProviderHelper.insertNotebook(notebookToAdd);
         } else if (editMode == EditMode.EDITING) {
             mNotebook.setName(notebookName);
-            notebookDAO.update(mNotebook.getId(), mNotebook);
+//            notebookDAO.update(mNotebook.getId(), mNotebook);
+
+            EverpobreProviderHelper.updateNotebook(mNotebook);
         }
 
         finish();

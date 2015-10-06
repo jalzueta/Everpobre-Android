@@ -66,28 +66,6 @@ public class DataGridFragment extends Fragment {
 
         if (gridView != null){
             refreshData();
-
-            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    if (listener != null){
-                        listener.dataGridElementClick(parent, view, position, id);
-                    }
-                }
-            });
-
-            gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    if (listener != null) {
-                        listener.dataGridElementLongClick(parent, view, position, id);
-                    }
-
-                    // Este return a "false" le da paso al evento "onClick"
-                    return true;
-                }
-            });
         }
     }
 
@@ -105,6 +83,28 @@ public class DataGridFragment extends Fragment {
 
         gridView = (GridView) getActivity().findViewById(idGridView);
         gridView.setAdapter(adapter);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                if (listener != null){
+                    listener.dataGridElementClick(parent, view, position, id);
+                }
+            }
+        });
+
+        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (listener != null) {
+                    listener.dataGridElementLongClick(parent, view, position, id);
+                }
+
+                // Este return a "false" le da paso al evento "onClick"
+                return true;
+            }
+        });
     }
 
     public OnDataGridFragmentClickListener getListener() {

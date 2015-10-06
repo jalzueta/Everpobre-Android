@@ -9,4 +9,11 @@
         android:title="@string/action_new_notebook_title"
         android:orderInCategory="100"
         app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_open_map"
+        android:icon="@android:drawable/ic_dialog_map"
+        android:title="@string/action_open_map_title"
+        android:orderInCategory="100"
+        app:showAsAction="always"/>
 </menu>

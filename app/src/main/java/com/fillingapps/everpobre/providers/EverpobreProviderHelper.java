@@ -1,6 +1,7 @@
 package com.fillingapps.everpobre.providers;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -10,6 +11,7 @@ import com.fillingapps.everpobre.model.Notebook;
 import com.fillingapps.everpobre.model.dao.NoteDAO;
 import com.fillingapps.everpobre.model.dao.NotebookDAO;
 import com.fillingapps.everpobre.model.db.DBConstants;
+import com.fillingapps.everpobre.model.db.DBHelper;
 
 public class EverpobreProviderHelper {
 
@@ -55,6 +57,18 @@ public class EverpobreProviderHelper {
         Uri insertedUri = cr.insert(EverpobreProvider.NOTES_URI, NoteDAO.getContentValues(note));
 
         return insertedUri;
+    }
+
+    public static int updateNotebook(Notebook notebook) {
+        if (notebook == null) {
+            return (int) DBHelper.INVALID_ID;
+        }
+        ContentResolver cr = EverpobreApp.getAppContext().getContentResolver();
+
+        String sUri = EverpobreProvider.NOTEBOOKS_URI.toString() + "/" + notebook.getId();
+        Uri uri = Uri.parse(sUri);
+        int updatedNotebooks = cr.update(uri, NotebookDAO.getContentValues(notebook), null, null);
+        return updatedNotebooks;
     }
 
     public static void deleteNotebook(Notebook notebook) {
