@@ -14,6 +14,7 @@ import com.fillingapps.everpobre.R;
 import com.fillingapps.everpobre.model.Notebook;
 import com.fillingapps.everpobre.model.dao.NotebookDAO;
 import com.fillingapps.everpobre.providers.EverpobreProvider;
+import com.fillingapps.everpobre.providers.EverpobreProviderHelper;
 import com.fillingapps.everpobre.utils.Constants;
 
 import butterknife.Bind;
@@ -84,13 +85,21 @@ public class EditNotebookActivity extends AppCompatActivity {
             return;
         }
 
-//        final NotebookDAO notebookDAO = new NotebookDAO(this);
-//        notebookDAO.delete(mNotebook);
+        // Using NotebookDAO
+        /*
+        final NotebookDAO notebookDAO = new NotebookDAO(this);
+        notebookDAO.delete(mNotebook);
+        */
 
+        // Using ContentResolver the manual way
+        /*
         ContentResolver cr = EverpobreApp.getAppContext().getContentResolver();
         String sUri = EverpobreProvider.NOTEBOOKS_URI.toString() + "/" + mNotebook.getId();
         Uri uri = Uri.parse(sUri);
         cr.delete(uri, null, null);
+         */
+
+        EverpobreProviderHelper.deleteNotebook(mNotebook);
 
         finish();
     }
